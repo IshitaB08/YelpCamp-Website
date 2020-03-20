@@ -1,7 +1,9 @@
-var express = require('express'),
-    app = express(),
+var express    = require('express'),
+    app        = express(),
     bodyParser = require("body-parser"),
-    mongoose = require("mongoose")
+    mongoose   = require("mongoose"),
+    Campground = require("./models/campgrounds"),
+    seedDB     = require("./seeds")
 
 
 // var campgrounds = [
@@ -13,6 +15,7 @@ var express = require('express'),
 //     {name: "Montana Hills", image: "https://images.unsplash.com/photo-1507163525711-618d70c7a8f1?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1048&q=80"}
 // ];
 
+seedDB();
 mongoose.connect("mongodb://localhost/yelpcamp");
 app.use(bodyParser.urlencoded({
     extended: true
@@ -20,13 +23,7 @@ app.use(bodyParser.urlencoded({
 app.set("view engine", "ejs");
 
 //Schema Setup
-var campgroundSchema = new mongoose.Schema({
-    name: String,
-    image: String,
-    description: String
-});
 
-var Campground = mongoose.model("Campground", campgroundSchema);
 
 // Campground.create({
 //         name: "Nevada Creek",
@@ -54,7 +51,7 @@ app.get("/campgrounds", function (req, res) {
         if (err) {
             console.log(err);
         } else {
-            res.render("index", {
+            res.render("campgrounds/index", {
                 campgrounds: allCampgrounds
             });
         }
@@ -86,18 +83,19 @@ app.post("/campgrounds", function (req, res) {
 
 //NEW
 app.get("/campgrounds/new", function (req, res) {
-    res.render("new.ejs");
+    res.render("campgrounds/new");
 });
 
 
 //SHOW
 app.get("/campgrounds/:id", function (req, res) {
     // Find campground with provided id
-    Campground.findById(req.params.id, function (err, foundCampground) {
+    Campground.findById(req.params.id).populate("comments").exec(function (err, foundCampground) {
         if (err) {
             console.log(err);
         } else {
-            res.render("show", {
+            console.log(foundCampground);
+            res.render("campgrounds/show", {
                 campground: foundCampground
             });
         }
@@ -106,6 +104,15 @@ app.get("/campgrounds/:id", function (req, res) {
     // Render show template with that campground
 
 });
+
+// ------------- 
+// Comment Routes
+// -------------
+
+app.get("/campgrounds/:id/comments/new", function(req, res){
+    res.render("comments/new");
+});
+
 
 app.listen(3000, function () {
     console.log('yelpcamp');
