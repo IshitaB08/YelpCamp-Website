@@ -3,6 +3,7 @@ var express    = require('express'),
     bodyParser = require("body-parser"),
     mongoose   = require("mongoose"),
     Campground = require("./models/campgrounds"),
+    Comment    = require("./models/comment"),
     seedDB     = require("./seeds")
 
 
@@ -15,12 +16,15 @@ var express    = require('express'),
 //     {name: "Montana Hills", image: "https://images.unsplash.com/photo-1507163525711-618d70c7a8f1?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1048&q=80"}
 // ];
 
-seedDB();
+
 mongoose.connect("mongodb://localhost/yelpcamp");
 app.use(bodyParser.urlencoded({
     extended: true
 }));
 app.set("view engine", "ejs");
+app.use(express.static(__dirname + "/public"));
+seedDB();
+
 
 //Schema Setup
 
@@ -110,8 +114,34 @@ app.get("/campgrounds/:id", function (req, res) {
 // -------------
 
 app.get("/campgrounds/:id/comments/new", function(req, res){
-    res.render("comments/new");
+    Campground.findById(req.params.id, function(err, campground){
+        if(err){
+            console.log(err);
+        } else {
+            res.render("comments/new", {campground: campground});
+        }
+    });
+    
 });
+
+app.post("/campgrounds/:id/comments", function(req, res){
+    Campground.findById(req.params.id, function(err, campground){
+        if(err){
+            console.log(err);
+            res.redirect("/campgrounds");
+        } else {
+            Comment.create(req.body.comment, function(err, comment){
+                if(err){
+                    console.log(err);
+                } else {
+                    campground.comments.push(comment);
+                    campground.save();
+                    res.redirect('/campgrounds/' + campground._id);
+                }
+            });
+        }
+    })
+})
 
 
 app.listen(3000, function () {
