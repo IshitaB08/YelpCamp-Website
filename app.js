@@ -2,8 +2,11 @@ var express    = require('express'),
     app        = express(),
     bodyParser = require("body-parser"),
     mongoose   = require("mongoose"),
+    passport   = require("passport"),
+    LocalStrategy = require("passport-local",)
     Campground = require("./models/campgrounds"),
     Comment    = require("./models/comment"),
+    User       = require("./models/user"),
     seedDB     = require("./seeds")
 
 
@@ -24,6 +27,21 @@ app.use(bodyParser.urlencoded({
 app.set("view engine", "ejs");
 app.use(express.static(__dirname + "/public"));
 seedDB();
+
+// passport config
+
+app.use(require("express-session")({
+    secret: "once gfaikn",
+    resave: false,
+    saveUninitialized: false
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
 
 
 //Schema Setup
@@ -142,6 +160,45 @@ app.post("/campgrounds/:id/comments", function(req, res){
         }
     })
 })
+
+
+
+// auth routes
+
+// show regsister form
+
+app.get("/register", function(req, res){
+    res.render("register");
+})
+
+// sign up logic
+app.post("/register", function(req, res){
+    var newUser = new User({username: req.body.username});
+    User.register(newUser, req.body.password, function(err, user){
+        if(err){
+            console.log(err);
+            return res.render("register");
+        } 
+
+        passport.authenticate("local")(req, res, function(){
+            res.redirect("/campgrounds");
+        });
+    });
+});
+
+//show login form
+
+app.get("/login", function(req, res){
+    res.render("login");
+})
+//handling logic; post, middleware, callback.
+app.post("/login", passport.authenticate("local",
+    {
+        successRedirect: "/campgrounds",
+        failureRedirect: "/login"
+    }), function(req, res){
+
+});
 
 
 app.listen(3000, function () {
