@@ -2,14 +2,18 @@
     width: 100%;
 }
 
-.thumbnail {
-    padding: 0;
+.thumbnail caption-full {
+    padding: 10px;
 }
 
-.thumbnail caption-full {
+.thumbnail {
     padding: 9px;
 }
 
 .list-group-item-active {
-    background: rgb(0, 217, 255);
+    background: teal;
+}
+
+#delete-form{
+    display: inline;
 }
