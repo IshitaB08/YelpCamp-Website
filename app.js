@@ -22,9 +22,9 @@ var commentRoutes    = require("./routes/comments"),
 //     {name: "Montana Hills", image: "https://images.unsplash.com/photo-1507163525711-618d70c7a8f1?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1048&q=80"}
 // ];
 
-
-mongoose.connect("mongodb://localhost/yelpcamp");
-//mongoose.connect('mongodb+srv://<dbuser>:<password>@cluster0-c8lyo.mongodb.net/test?retryWrites=true&w=majority', {
+mongoose.connect(process.env.DATABASEURL);
+// mongoose.connect("mongodb://localhost/yelpcamp");
+// mongoose.connect('mongodb+srv://ishita:yelpcamp@cluster0-c8lyo.mongodb.net/test?retryWrites=true&w=majority', {
 //     useNewUrlParser: true,
 //     useCreateIndex: true
 // }).then(() => {
