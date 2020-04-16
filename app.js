@@ -66,9 +66,12 @@ app.use(indexRoutes);
 app.use("/campgrounds", campgroundRoutes);
 app.use("/campgrounds/:id/comments", commentRoutes);
 
-app.listen(3000, function () {
-    console.log('yelpcamp');
-});
+
+const { PORT=3000, LOCAL_ADDRESS='0.0.0.0' } = process.env
+app.listen(PORT, LOCAL_ADDRESS, () => {
+    const address = server.address();
+    console.log('server listening at', address);
+  });
 
 //Schema Setup
 
