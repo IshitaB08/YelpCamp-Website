@@ -24,6 +24,14 @@ var commentRoutes    = require("./routes/comments"),
 
 
 mongoose.connect("mongodb://localhost/yelpcamp");
+//mongoose.connect('mongodb+srv://<dbuser>:<password>@cluster0-c8lyo.mongodb.net/test?retryWrites=true&w=majority', {
+//     useNewUrlParser: true,
+//     useCreateIndex: true
+// }).then(() => {
+//     console.log('connected!')
+// }).catch(err => {
+//     console.log('ERROR:', err.message);
+// });
 
 app.use(bodyParser.urlencoded({
     extended: true
@@ -62,6 +70,9 @@ app.use("/campgrounds/:id/comments", commentRoutes);
 app.listen(3000, function () {
     console.log('yelpcamp');
 });
+
+//var port_number = app.listen(process.env.PORT || 3000);
+//app.listen(port_number);
 
 //Schema Setup
 
